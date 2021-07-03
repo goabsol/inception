@@ -1,7 +1,7 @@
 version: "3.3"
 services:
     web:
-        build: ./nginx
+        build: ./srcs/nginx
         ports:
             - "443:443"
         networks: 
@@ -9,7 +9,7 @@ services:
         volumes: 
             - first:/wordpress
     wordpress:
-        build: ./Wp+php
+        build: ./srcs/Wp+php
         networks: 
             - default
         volumes: 

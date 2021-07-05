@@ -1,20 +1,37 @@
 version: "3.3"
+
 services:
-    web:
+    nginx:
         build: ./srcs/nginx
         ports:
-            - "443:443"
+            - 443:443
         networks: 
-            - default
+            - inception-network
         volumes: 
-            - first:/wordpress
+            - wp-files:/wordpress
+        depends_on:
+            - wordpress
+
     wordpress:
-        build: ./srcs/Wp+php
+        build: ./srcs/wordpress
         networks: 
-            - default
-        volumes: 
-            - first:/wordpress
+            - inception-network
+        volumes:
+            - wp-files:/wordpress
+        depends_on:
+            - mariadb
+
+    mariadb:
+        build: ./srcs/mariadb
+        networks: 
+            - inception-network
+        volumes:
+            - db-files:/var/lib/mysql
+
 networks:
-    default:
+    inception-network:
+        driver: bridge
+
 volumes:
-    first:
+    wp-files:
+    db-files:

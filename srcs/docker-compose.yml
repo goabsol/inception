@@ -1,0 +1,85 @@
+version: "3.3"
+
+services:
+    nginx:
+        container_name: nginx
+        build: ./nginx
+        ports:
+            - 443:443
+        networks: 
+            - inception-network
+        volumes: 
+            - wp-files:/wordpress
+            - adminer-files:/var/www/adminer
+            - static-files:/var/www/static
+        depends_on:
+            - wordpress
+            - adminer
+        env_file:
+            - .env
+        restart: always
+
+    wordpress:
+        container_name: wordpress
+        build: ./wordpress
+        networks: 
+            - inception-network
+        volumes:
+            - wp-files:/wordpress
+        depends_on:
+            - mariadb
+        env_file:
+            - .env
+        restart: always
+
+    mariadb:
+        container_name: mariadb
+        build: ./mariadb
+        networks: 
+            - inception-network
+        volumes:
+            - db-files:/var/lib/mysql
+        env_file:
+            - .env
+        restart: always
+
+    adminer:
+        container_name: adminer
+        build: ./bonus/adminer
+        networks: 
+            - inception-network
+        volumes:
+            - adminer-files:/var/www/adminer
+        env_file:
+            - .env
+        restart: always
+
+networks:
+    inception-network:
+        driver: bridge
+
+volumes:
+    wp-files:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: '/home/arhallab/data/wordpress'
+    db-files:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: '/home/arhallab/data/mariadb'
+    adminer-files:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: '/home/arhallab/data/adminer'
+    static-files:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: '/home/arhallab/data/static'
